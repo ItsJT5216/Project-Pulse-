@@ -19,7 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source core library if not already loaded
 if ! declare -f json_escape &>/dev/null; then
     # shellcheck source=lib/core.sh
-    source "${SCRIPT_DIR}/core.sh"
+    source "${SCRIPT_DIR}/../lib/core.sh"
 fi
 
 #===============================================================================

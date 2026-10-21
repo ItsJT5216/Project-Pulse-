@@ -1,11 +1,10 @@
 {
     "name": "projectpulse",
     "version": "0.1.0",
-    "type": "module",
+    "type": "commonjs",
     "description": "IDE-like project awareness for AI agents",
-    "main": "dist/index.js",
     "bin": {
-        "projectpulse": "dist/index.js",
+        "projectpulse": "bin/projectpulse",
         "pulse-agents": "dist/daemon/index.js"
     },
     "scripts": {
@@ -27,15 +26,15 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "@types/node": "^20.19.30",
-        "@typescript-eslint/eslint-plugin": "^8.54.0",
-        "@typescript-eslint/parser": "^8.54.0",
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^26.1.0",
+        "@typescript-eslint/eslint-plugin": "^8.62.1",
+        "@typescript-eslint/parser": "^8.62.1",
         "@vitest/coverage-v8": "^4.1.11",
-        "eslint": "^9.39.2",
-        "eslint-plugin-security": "^3.0.1",
-        "typedoc": "^0.28.16",
-        "typescript": "^5.0.0",
+        "eslint": "^10.6.0",
+        "eslint-plugin-security": "^4.0.1",
+        "typedoc": "^0.28.19",
+        "typescript": "^6.0.3",
         "vitest": "^4.1.11"
     },
     "engines": {

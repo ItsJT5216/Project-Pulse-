@@ -481,8 +481,13 @@ generate_hotspots() {
         fi
         
         # Count TODOs/FIXMEs
-        local todo_count
-        todo_count=$(grep -c -E '(TODO|FIXME|HACK|XXX):?' "$file" 2>/dev/null || echo 0)
+        # grep returns 1 with a valid zero count when no lines match.
+        local todo_count grep_status=0
+        todo_count=$(grep -c -E '(TODO|FIXME|HACK|XXX):?' -- "$file") || grep_status=$?
+        case "$grep_status" in
+            0|1) ;;
+            *) return "$grep_status" ;;
+        esac
         
         if [[ "$todo_count" -gt 0 ]]; then
             [[ "$first" -eq 0 ]] && hotspots_json+=","

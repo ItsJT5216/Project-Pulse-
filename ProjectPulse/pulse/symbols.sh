@@ -480,6 +480,8 @@ extract_java_symbols() {
     local filepath="$1"
     local symbols=()
     local linenum=0
+    # Keep shell metacharacters literal and square brackets valid in the ERE.
+    local method_regex='(public|private|protected)?[[:space:]]*(static)?[[:space:]]*(final)?[[:space:]]*[][a-zA-Z_<>,[:space:]]+[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\('
     
     while IFS= read -r line || [[ -n "$line" ]]; do
         ((linenum++))
@@ -513,8 +515,8 @@ extract_java_symbols() {
         fi
         
         # Method definitions
-        if [[ "$line" =~ (public|private|protected)?[[:space:]]*(static)?[[:space:]]*(final)?[[:space:]]*[a-zA-Z_<>[\],[:space:]]+[[:space:]]+([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\( ]] && \
-           [[ ! "$line" =~ ^[[:space:]]*(if|while|for|switch|return|new)[[:space:]]*\( ]]; then
+        if [[ ! "$line" =~ ^[[:space:]]*(if|while|for|switch|return|new)[[:space:]]*\( ]] && \
+           [[ "$line" =~ $method_regex ]]; then
             local name="${BASH_REMATCH[4]}"
             if [[ "$name" != "if" && "$name" != "while" && "$name" != "for" && \
                   "$name" != "switch" && "$name" != "return" && "$name" != "new" && \

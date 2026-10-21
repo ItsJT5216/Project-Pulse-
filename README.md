@@ -45,8 +45,8 @@ npm install
 # Build the TypeScript source
 npm run build
 
-# Run the installation script (optional - sets up symlinks)
-./install.sh
+# Install the existing projectpulse and pulse-agents commands
+npm install --global .
 ```
 
 ### Quick Start

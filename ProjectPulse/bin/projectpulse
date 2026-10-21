@@ -21,10 +21,18 @@
 set -euo pipefail
 
 # Resolve script location and project structure
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [[ -L "$SCRIPT_PATH" ]]; do
+    SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" && pwd)"
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+    case "$SCRIPT_PATH" in
+        /*) ;;
+        *) SCRIPT_PATH="${SCRIPT_DIR}/${SCRIPT_PATH}" ;;
+    esac
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 LIB_DIR="${PROJECT_DIR}/lib"
-HOOKS_DIR="${PROJECT_DIR}/hooks"
 PULSE_DIR="${PROJECT_DIR}/pulse"
 
 # Source core library
@@ -112,8 +120,8 @@ cmd_inject() {
     
     # Generate local briefing pack
     local local_pack
-    if [[ -x "${HOOKS_DIR}/projectpulse.sh" ]]; then
-        local_pack=$("${HOOKS_DIR}/projectpulse.sh" 2>/dev/null) || local_pack='{"error":"pack_generation_failed"}'
+    if [[ -x "${PULSE_DIR}/projectpulse.sh" ]]; then
+        local_pack=$("${PULSE_DIR}/projectpulse.sh" 2>/dev/null) || local_pack='{"error":"pack_generation_failed"}'
     else
         local_pack='{"error":"projectpulse.sh not found"}'
     fi
@@ -127,9 +135,9 @@ cmd_inject() {
     # Try cloud enrichment if configured
     local final_pack="$local_pack"
     if google_configured; then
-        if [[ -x "${HOOKS_DIR}/google-query.sh" ]]; then
+        if [[ -x "${PULSE_DIR}/google-query.sh" ]]; then
             local enriched
-            enriched=$("${HOOKS_DIR}/google-query.sh" inject "$local_pack" 2>/dev/null) || true
+            enriched=$("${PULSE_DIR}/google-query.sh" inject "$local_pack" 2>/dev/null) || true
             if [[ -n "$enriched" && "$enriched" != *'"error"'* ]]; then
                 final_pack="$enriched"
             fi
@@ -464,8 +472,8 @@ cmd_config_print() {
 #===============================================================================
 
 cmd_sync() {
-    if [[ -x "${HOOKS_DIR}/google-sync.sh" ]]; then
-        exec "${HOOKS_DIR}/google-sync.sh" "$@"
+    if [[ -x "${PULSE_DIR}/google-sync.sh" ]]; then
+        exec "${PULSE_DIR}/google-sync.sh" "$@"
     else
         json_err "google-sync.sh not found or not executable" 1
     fi
